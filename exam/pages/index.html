@@ -1,0 +1,523 @@
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Invoice</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+    <!-- Default theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+    <!-- Semantic UI theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/semantic.min.css"/>
+    <!-- Bootstrap theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css"/>
+
+    <style>
+        /* reset */
+
+        * {
+            border: 0;
+            box-sizing: content-box;
+            color: inherit;
+            font-family: inherit;
+            font-size: inherit;
+            font-style: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            text-decoration: none;
+            vertical-align: top;
+        }
+
+        /* content editable */
+
+        *[contenteditable] {
+            border-radius: 0.25em;
+            min-width: 1em;
+            outline: 0;
+        }
+
+        *[contenteditable] {
+            cursor: pointer;
+        }
+
+        *[contenteditable]:hover,
+        *[contenteditable]:focus,
+        td:hover *[contenteditable],
+        td:focus *[contenteditable],
+        img.hover {
+            background: #DEF;
+            box-shadow: 0 0 1em 0.5em #DEF;
+        }
+
+        span[contenteditable] {
+            display: inline-block;
+        }
+
+        /* heading */
+
+        h1 {
+            font: bold 100% sans-serif;
+            letter-spacing: 0.5em;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        /* table */
+
+        table {
+            font-size: 75%;
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 2px;
+        }
+
+        th,
+        td {
+            border-width: 1px;
+            padding: 0.5em;
+            position: relative;
+            text-align: left;
+        }
+
+        th,
+        td {
+            border-radius: 0.25em;
+            border-style: solid;
+        }
+
+        th {
+            background: #EEE;
+            border-color: #BBB;
+        }
+
+        td {
+            border-color: #DDD;
+        }
+
+        /* page */
+
+        html {
+            font: 16px/1 'Open Sans', sans-serif;
+            overflow: auto;
+            padding: 0.5in;
+        }
+
+        html {
+            border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+            cursor: default;
+        }
+
+        body {
+            box-sizing: border-box;
+            margin: 0 auto;
+            overflow: visible;
+            padding: 0.5in;
+            width: 8.5in;
+        }
+
+        body {
+            background: #FFF;
+            border-radius: 1px;
+            box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+        }
+
+        /* header */
+
+        header {
+            margin: 0 0 3em;
+        }
+
+        header:after {
+            clear: both;
+            content: "";
+            display: table;
+        }
+
+        header h1 {
+            background: #000;
+            border-radius: 0.25em;
+            color: #FFF;
+            margin: 0 0 1em;
+            padding: 0.5em 0;
+        }
+
+        header address {
+            float: left;
+            font-size: 75%;
+            font-style: normal;
+            line-height: 1.25;
+            margin: 0 1em 1em 0;
+        }
+
+        header address p {
+            margin: 0 0 0.25em;
+        }
+
+        header span,
+        header img {
+            display: block;
+            float: right;
+        }
+
+        header span {
+            margin: 0 0 1em 1em;
+            max-height: 25%;
+            max-width: 60%;
+            position: relative;
+        }
+
+        header img {
+            max-height: 100%;
+            max-width: 100%;
+        }
+
+        header input {
+            cursor: pointer;
+            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+            height: 100%;
+            left: 0;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+
+        /* article */
+
+        article,
+        article address,
+        table.meta,
+        table.inventory {
+            margin: 0 0 3em;
+        }
+
+        article:after {
+            clear: both;
+            content: "";
+            display: table;
+        }
+
+        article h1 {
+            clip: rect(0 0 0 0);
+            position: absolute;
+        }
+
+        article address {
+            float: left;
+            font-size: 125%;
+            font-weight: bold;
+        }
+
+        /* table meta & balance */
+
+        table.meta,
+        table.balance {
+            float: right;
+            width: 36%;
+        }
+
+        table.meta:after,
+        table.balance:after {
+            clear: both;
+            content: "";
+            display: table;
+        }
+
+        /* table meta */
+
+        table.meta th {
+            width: 40%;
+        }
+
+        table.meta td {
+            width: 60%;
+        }
+
+        /* table items */
+
+        table.inventory {
+            clear: both;
+            width: 100%;
+        }
+
+        table.inventory th {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        table.inventory td:nth-child(1) {
+            width: 26%;
+        }
+
+        table.inventory td:nth-child(2) {
+            width: 38%;
+        }
+
+        table.inventory td:nth-child(3) {
+            text-align: right;
+            width: 12%;
+        }
+
+        table.inventory td:nth-child(4) {
+            text-align: right;
+            width: 12%;
+        }
+
+        table.inventory td:nth-child(5) {
+            text-align: right;
+            width: 12%;
+        }
+
+        /* table balance */
+
+        table.balance th,
+        table.balance td {
+            width: 50%;
+        }
+
+        table.balance td {
+            text-align: right;
+        }
+
+        /* aside */
+
+        aside h1 {
+            border: none;
+            border-width: 0 0 1px;
+            margin: 0 0 1em;
+        }
+
+        aside h1 {
+            border-color: #999;
+            border-bottom-style: solid;
+        }
+
+        /* javascript */
+
+        .add,
+        .cut {
+            border-width: 1px;
+            display: block;
+            font-size: .8rem;
+            padding: 0.25em 0.5em;
+            float: left;
+            text-align: center;
+            width: 0.6em;
+        }
+
+        .add,
+        .cut {
+            background: #9AF;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            background-image: -moz-linear-gradient(#00ADEE 5%, #0078A5 100%);
+            background-image: -webkit-linear-gradient(#00ADEE 5%, #0078A5 100%);
+            border-radius: 0.5em;
+            border-color: #0076A3;
+            color: #FFF;
+            cursor: pointer;
+            font-weight: bold;
+            text-shadow: 0 -1px 2px rgba(0, 0, 0, 0.333);
+        }
+
+        .add {
+            margin: -2.5em 0 0;
+        }
+
+        .add:hover {
+            background: #00ADEE;
+        }
+
+        .cut {
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: -1.5em;
+        }
+
+        .cut {
+            -webkit-transition: opacity 100ms ease-in;
+        }
+
+        tr:hover .cut {
+            opacity: 1;
+        }
+
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact;
+            }
+
+            html {
+                background: none;
+                padding: 0;
+            }
+
+            body {
+                box-shadow: none;
+                margin: 0;
+            }
+
+            span:empty {
+                display: none;
+            }
+
+            .add,
+            .cut {
+                display: none;
+            }
+        }
+
+        @page {
+            margin: 0;
+        }
+        .questions{
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+        .questions input{
+            margin-left: 20px;
+        }
+        .questions p {
+            line-height: 16px;
+        }
+        #timer{
+            font-size: 20px;
+	        position: fixed;
+            bottom: 0;
+            left: 10px;
+            top: 10px;
+        }
+    </style>
+    
+</head>
+
+<body>
+    <span id="timer"></span>
+    <span id="seconds" style="display: none;">3600</span>
+
+    <form id="formtest" action="" method="post">
+        <div style="margin-bottom: 20px;border-bottom: 0.6px dashed #000;">
+            <h4 style="font-weight: bold;">True & False</h4>
+        </div>
+        <div class="questions">
+            <p>1. <span style="font-style:italic">#column</span> is the correct way to define a class in CSS.</p><br/>
+            <input type="radio" name="trueoffalse1" value="true"> True <input type="radio" name="trueoffalse1" value="false" style="margin-left: 10px;"> False
+        </div>
+        <div class="questions">
+            <p>2. You can assign multiple CSS classes on an HTML element provided that the element supports multi-class assignment.</p><br/>
+            <input type="radio" name="trueoffalse2" value="true"> True <input type="radio" name="trueoffalse2" value="false" style="margin-left: 10px;"> False
+        </div>
+        <div class="questions">
+            <p>3. An HTML tag should have an opening and a closing tag.</p><br/>
+            <input type="radio" name="trueoffalse3" value="true"> True <input type="radio" name="trueoffalse3" value="false" style="margin-left: 10px;"> False
+        </div>
+        <div class="questions">
+            <p>4. All content of a web-page visible to the user should be inside the <span style="font-style:italic">&lt;head&gt;</span>&lt;/head&gt;</span> tags.</p><br/>
+            <input type="radio" name="trueoffalse4" value="true"> True <input type="radio" name="trueoffalse4" value="false" style="margin-left: 10px;"> False
+        </div>
+        <div class="questions">
+            <p>5. An anchor tag (<span style="font-style:italic">&lt;a&gt;&lt;/a&gt;</span>) can be used to link up a section in a web page.</p><br/>
+            <input type="radio" name="trueoffalse5" value="true"> True <input type="radio" name="trueoffalse5" value="false" style="margin-left: 10px;"> False
+        </div>
+        <div class="questions">
+            <p>6. The <span style="font-style:italic">id</span> property can be used to assign CSS styling on an HTML element.</p><br/>
+            <input type="radio" name="trueoffalse6" value="true"> True <input type="radio" name="trueoffalse6" value="false" style="margin-left: 10px;"> False
+        </div>
+
+
+        <div style="margin-top: 30px;margin-bottom: 20px;border-bottom: 0.6px dashed #000;">
+            <h4 style="font-weight: bold;">Multiple Choice</h4>
+        </div>
+        <div class="questions">
+            <p>1. Which of the following is the correct way to assign CSS styling? (Select all that apply)</p><br/>
+            <input type="checkbox" name="1of1" value="1of1"> <span style="font-style:italic">id="column"</span><br/><br/>
+            <input type="checkbox" name="1of2" value="1of2"> <span style="font-style:italic">class="column row cellrow"</span><br/><br/>
+            <input type="checkbox" name="1of3" value="1of3"> <span style="font-style:italic">id="column row cellrow"</span><br/><br/>
+            <input type="checkbox" name="1of4" value="1of4"> <span style="font-style:italic">syle="column; row; cellrow"</span>
+        </div>
+        <div class="questions">
+            <p>2. Assume that you have an image located in this path <span style="font-style:italic">/home/var/podcast/assets/img/img.png</span>, which of the following is the correct way to assign the image in this file <span style="font-style:italic">/home/var/podcast/index.html</span>?</p><br/>
+            <input type="checkbox" name="2of1" value="2of1"> <span style="font-style:italic">&lt;img src="img.png"&gt;</span><br/><br/>
+            <input type="checkbox" name="2of2" value="2of2"> <span style="font-style:italic">&lt;img src="../../img/img.png"&gt;</span><br/><br/>
+            <input type="checkbox" name="2of3" value="2of3"> <span style="font-style:italic">&lt;img src="assets/img/img.png"&gt;</span><br/><br/>
+            <input type="checkbox" name="2of4" value="2of4"> <span style="font-style:italic">&lt;img src="podcast/assets/img/img.png"&gt;</span>
+        </div>
+        <div class="questions">
+            <p>3. <span style="font-style:italic">/home/var/podcast/assets/img/profile.png</span> is known as which kind of a path?</p><br/>
+            <input type="checkbox" name="3of1" value="3of1"> Relative path<br/><br/>
+            <input type="checkbox" name="3of2" value="3of2"> Absolute path<br/><br/>
+            <input type="checkbox" name="3of3" value="3of3"> Images<br/><br/>
+            <input type="checkbox" name="3of4" value="3of4"> Assets
+        </div>
+        <div class="questions">
+            <p>4. Which of the following statements are true regarding CSS styling? (Select all that apply)</p><br/>
+            <input type="checkbox" name="4of1" value="4of1"> CSS is used to populate data<br/><br/>
+            <input type="checkbox" name="4of2" value="4of2"> CSS files have a .css file extension<br/><br/>
+            <input type="checkbox" name="4of3" value="4of3"> Only one CSS file can be linked in a web-page<br/><br/>
+            <input type="checkbox" name="4of4" value="4of4"> CSS can be applied in-line on an HTML element
+        </div>
+
+
+        <div style="margin-top: 30px;margin-bottom: 20px;border-bottom: 0.6px dashed #000;">
+            <h4 style="font-weight: bold;">Practical</h4>
+        </div>
+        <div class="questions">
+            <p>Zanele has been struggling to apply the following on her web page: <br/><br/>
+                - A hover effect (on the 'View More' button) such that on mouse hover the color of the text should be this hex color: #0076A3<br/>
+                - Link the 'Read More' button to the Playlist section on the web page<br/><br/></p>
+            <p>Study her code below and help her apply the hover effect and link the 'View More' to the 'Playlist' section. (When the 'View More' button is clicked, the page should scroll to the 'Playlist' section)</p>
+            <br/><br/>
+            <p>Zanele's code: (Copy the code below to your editor and paste the fixed code once done)</p><br/>
+            <textarea style="width:100%;font-size:12px;background-color: #EEE;" rows="25" name="practical">{code_sample}</textarea>
+            <input type="hidden" name="done" value="1">
+        </div>
+        <br/><br/>
+        <a onclick="submit()" style="background-color: white;border:0.6px solid #000;padding:5px;text-decoration: none;cursor: pointer;">Submit</a>
+    </form>
+   
+</body>
+<script>
+    function submit(){
+        if (confirm ('Are you sure you want to submit the test? This can not be undone') == true) {
+            $('form#formtest').submit();
+        }
+    }
+</script>
+<script>
+    {expired.alert}
+    if (localStorage.getItem("seconds") === null)
+    {
+        localStorage.setItem('seconds', 3600);
+    }
+
+    var timer = setInterval(function () {
+
+      var count = parseInt($('#timer').html());
+      var seconds = parseInt(localStorage.getItem('seconds'));
+      if (seconds !== 0) {
+        seconds = seconds - 1;
+        $('#seconds').html(seconds);
+        localStorage.setItem('seconds', seconds);
+        $('#timer').html(Math.floor(seconds / 60) + ' mins');
+      } else {
+        clearInterval(timer);
+        window.location.href = window.location.href + '?expired';
+      }
+    }, 1000);
+  </script>
+</html>
